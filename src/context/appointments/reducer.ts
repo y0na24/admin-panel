@@ -1,0 +1,25 @@
+import { ActionsTypes, IAppointmentAction } from './actions'
+import {
+	IAppointment,
+	TypeActiveAppointment,
+} from '../../shared/interfaces/appointment.interface'
+
+export interface IInitialState {
+	allAppointments: IAppointment[] | []
+	activeAppointments: TypeActiveAppointment[] | []
+}
+
+const reducer = (state: IInitialState, action: IAppointmentAction) => {
+	switch (action.type) {
+		case ActionsTypes.SET_ALL_APPOINTMENTS:
+			return { ...state, allAppointments: action.payload }
+
+		case ActionsTypes.SET_ACTIVE_APPOINTMENTS:
+			return { ...state, activeAppointments: action.payload }
+
+		default:
+			return state
+	}
+}
+
+export default reducer
