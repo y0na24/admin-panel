@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useState, useCallback } from 'react'
 
 import AppointmentItem from '../appointmentItem.tsx/AppointmentItem'
 
@@ -8,24 +8,27 @@ import Error from '../error/Error'
 import CancelModal from '../modal/CancelModal'
 
 function AppointmentList() {
-	const { activeAppointments, getActiveAppointments, loadingStatus } =
-		useContext(AppointmentContext)
+	const {
+		activeAppointments,
+		getActiveAppointments,
+		loadingStatus,
+		calendarDate,
+	} = useContext(AppointmentContext)
 
 	const [isOpen, setIsOpen] = useState<boolean>(false)
 	const [selectedId, setSelectedId] = useState(0)
 
 	useEffect(() => {
 		getActiveAppointments()
-	}, [])
+	}, [calendarDate])
 
-	const openModal = (id: number) => {
+	const openModal = useCallback((id: number) => {
 		setIsOpen(true)
 		setSelectedId(id)
-	}
+	}, [])
 
 	const closeModal = () => {
 		setIsOpen(false)
-		setSelectedId(0)
 	}
 
 	return (
@@ -44,7 +47,8 @@ function AppointmentList() {
 					<AppointmentItem
 						{...appointment}
 						key={appointment.id}
-						openModal={() => openModal(appointment.id)}
+						openModal={openModal}
+						getActiveAppointments={getActiveAppointments}
 					/>
 				))}
 			<CancelModal

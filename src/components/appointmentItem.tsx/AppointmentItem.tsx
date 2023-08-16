@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, memo, useContext } from 'react'
 import './appointmentItem.scss'
 import dayjs from 'dayjs'
 import { Optional } from 'utility-types'
@@ -6,7 +6,8 @@ import { Optional } from 'utility-types'
 import { IAppointment } from '../../shared/interfaces/appointment.interface'
 
 type AppointmentProps = Optional<IAppointment, 'canceled'> & {
-	openModal: () => void
+	openModal?: (id: number) => void
+	getActiveAppointments?: () => void
 }
 
 function AppointmentItem({
@@ -17,6 +18,7 @@ function AppointmentItem({
 	phone,
 	canceled,
 	openModal,
+	getActiveAppointments,
 }: AppointmentProps) {
 	const [timeLeft, setTimeLeft] = useState<string | null>(null)
 
@@ -28,6 +30,13 @@ function AppointmentItem({
 		)
 
 		const intervalId = setInterval(() => {
+			if (timeLeft === '00:00') {
+				if (getActiveAppointments) {
+					getActiveAppointments()
+				}
+				clearInterval(intervalId)
+			}
+
 			setTimeLeft(
 				`${dayjs(date).diff(undefined, 'h')}:${
 					dayjs(date).diff(undefined, 'm') % 60
@@ -50,13 +59,20 @@ function AppointmentItem({
 				<span className='appointment__service'>Service: {service}</span>
 				<span className='appointment__phone'>Phone: {phone}</span>
 			</div>
-			{!canceled && (
+			{!canceled && openModal && (
 				<>
 					<div className='appointment__time'>
 						<span>Time left:</span>
 						<span className='appointment__timer'>{timeLeft}</span>
 					</div>
-					<button className='appointment__cancel' onClick={openModal}>
+					<button
+						className='appointment__cancel'
+						onClick={() => {
+							if (openModal) {
+								openModal(id)
+							}
+						}}
+					>
 						Cancel
 					</button>
 				</>
@@ -66,4 +82,4 @@ function AppointmentItem({
 	)
 }
 
-export default AppointmentItem
+export default memo(AppointmentItem)

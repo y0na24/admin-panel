@@ -9,7 +9,7 @@ interface HttpHeaders {
 interface RequestConfig {
 	url: string
 	method?: HttpRequestMethod
-	body?: string | null
+	body?: string | null | FormData
 	headers?: HttpHeaders
 }
 
@@ -38,11 +38,11 @@ export const useHttp = () => {
 				return data
 			} catch (err) {
 				setLoadingStatus('error')
-        throw err
+				throw err
 			}
 		},
 		[]
 	)
 
-  return {loadingStatus, request}
+	return { loadingStatus, request }
 }
